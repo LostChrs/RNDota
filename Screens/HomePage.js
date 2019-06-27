@@ -2,9 +2,10 @@
 import React, { Component } from 'react';
 import { connect, Provider } from "react-redux";
 import configureStore from '../Store/configureStore';
-import { Platform, StyleSheet, Text, View, Image, SafeAreaView, ScrollView } from 'react-native';
-import { Button, Toast, ActivityIndicator, WingBlank } from '@ant-design/react-native';
+import { FlatList, StyleSheet, Text, View, Image, SafeAreaView, TouchableHighlight } from 'react-native';
+import { Button, Toast, ActivityIndicator, WingBlank, Tag, Icon } from '@ant-design/react-native';
 import { fetchRank } from '../Store/fetchActions';
+import { Configs } from '../Consts/Config';
 
 class HomePage extends Component {
     state = {
@@ -12,14 +13,23 @@ class HomePage extends Component {
     }
     componentDidMount() {
         this.props.fetchRank();
-        console.log("hhhh");
     }
-    renderItem = (item) => {
+    onPressItem = (item)=>{
+
+    }
+    renderItem = ({ item }) => {
+        const iconUri = Configs.imageUrl + item.img;
         return (
-            <View style={styles.item}>
-                <Image source={{ uri: item.avatar }} style={{ resizeMode: "contain", width: 40, height: 40, marginEnd: 10 }} />
-                <Text>{item.personaname}</Text>
-            </View>
+            <TouchableHighlight onPress={()=>this.onPressItem(item)}>
+                <View style={styles.item}>
+                    <Image source={{ uri: iconUri }} style={{ resizeMode: "contain", width: 60, height: 60, marginEnd: 10 }} />
+                    <Text>{item.localized_name}</Text>
+                    <View style={{ position: "absolute", right: 26,width:120, flexDirection: "row", justifyContent: "space-between",alignItems:"center" }}>
+                        <Text>{item.pro_win}</Text>
+                        <Icon name="right" />
+                    </View>
+                </View>
+            </TouchableHighlight>
         );
     }
     render() {
@@ -32,12 +42,11 @@ class HomePage extends Component {
             );
         }
         return (
-            <SafeAreaView style={{ flex: 1, backgroundColor: "#eee" }}>
-                <ScrollView>
-                    <WingBlank>
-                        {rankData.map(item => this.renderItem(item))}
-                    </WingBlank>
-                </ScrollView>
+            <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
+                <FlatList
+                    data={this.props.rankData}
+                    renderItem={this.renderItem}
+                />
             </SafeAreaView>
         );
     }
@@ -53,7 +62,7 @@ const styles = StyleSheet.create({
     item: {
         flexDirection: "row",
         width: "100%",
-        height: 60,
+        height: 50,
         marginBottom: 1,
         justifyContent: "flex-start",
         alignItems: "center",
